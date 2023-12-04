@@ -15,9 +15,10 @@ public class Day02Gamecube {
     private static String GAME_KEY = "Game";
 
     public static void main(String[] args) {
-        List<String> dataInputs = InputDataUtils.readDataFrom(Day02Gamecube.class.getResourceAsStream("/Day-02-Puzzle-1-Input.txt"));
+        List<String> dataInputs = InputDataUtils
+                .readDataFrom(Day02Gamecube.class.getResourceAsStream("/Day-02-Puzzle-1-Input.txt"));
         List<GameResult> gameResults = parseGameInputs(dataInputs);
-        
+
         AtomicInteger sum = new AtomicInteger();
         getPossibleGameResultsForConfig(gameResults, 12, 13, 14).forEach(sum::getAndAdd);
 
@@ -61,14 +62,18 @@ public class Day02Gamecube {
         return gameResults;
     }
 
-    public static List<Integer> getPossibleGameResultsForConfig(List<GameResult> gameResults, int redCubesCount, int greenCubesCount, int blueCubesCount) {
+    public static List<Integer> getPossibleGameResultsForConfig(List<GameResult> gameResults, int redCubesCount,
+            int greenCubesCount, int blueCubesCount) {
         List<Integer> possibleGameIds = new ArrayList<>();
 
         Set<Integer> gameIds = new HashSet<>();
         gameResults.forEach(item -> gameIds.add(item.id()));
 
         for (int gameId : gameIds) {
-            if (gameResults.stream().filter(item -> item.id() == gameId).allMatch(item -> item.redCubes() <= redCubesCount && item.greenCubes() <= greenCubesCount && item.blueCubes() <= blueCubesCount)) {
+            if (gameResults.stream()
+                    .filter(item -> item.id() == gameId)
+                    .allMatch(item -> item.redCubes() <= redCubesCount && item.greenCubes() <= greenCubesCount
+                            && item.blueCubes() <= blueCubesCount)) {
                 possibleGameIds.add(gameId);
             }
         }
