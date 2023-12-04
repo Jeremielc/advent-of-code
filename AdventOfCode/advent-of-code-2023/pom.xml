@@ -33,6 +33,11 @@
       <version>5.9.3</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.jeremielc.aoc</groupId>
+      <artifactId>advent-of-code-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

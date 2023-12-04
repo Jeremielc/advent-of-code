@@ -11,5 +11,6 @@
 
   <modules>
     <module>advent-of-code-2023</module>
+    <module>advent-of-code-common</module>
   </modules>
 </project>
