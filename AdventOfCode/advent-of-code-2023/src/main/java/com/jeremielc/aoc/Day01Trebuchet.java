@@ -1,26 +1,41 @@
 package com.jeremielc.aoc;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import com.jeremielc.aoc.utils.InputDataUtils;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Day01Trebuchet {
+  private static final Map<String, Integer> digitMap = new HashMap<>();
+
+  static {
+    digitMap.put("one", 1);
+    digitMap.put("two", 2);
+    digitMap.put("three", 3);
+    digitMap.put("four", 4);
+    digitMap.put("five", 5);
+    digitMap.put("six", 6);
+    digitMap.put("seven", 7);
+    digitMap.put("eight", 8);
+    digitMap.put("nine", 9);
+  }
+
   public static void main(String[] args) {
-    List<String> calibrationValues = new ArrayList<>();
-    String line;
+    List<String> lines = InputDataUtils.readDataFrom(Day01Trebuchet.class.getResourceAsStream("/Day-01-Puzzle-1-Input.txt"));
+    List<String> values = new ArrayList<>();
 
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(Day01Trebuchet.class.getResourceAsStream("/Day-01-Puzzle-1-Input.txt")))) {
-      while ((line = br.readLine()) != null) {
-        calibrationValues.add(extractIntegerCalibrationValue(line));
-      }
-    } catch (IOException ex) {
-      System.err.println(ex.getMessage());
-      ex.printStackTrace(System.err);
-    }
+    // ######## PUZZLE #1 ########
+    lines.forEach(item -> values.add(extractIntegerCalibrationValue(item.toLowerCase())));
+    System.out.println("DAY 01 - Puzzle 1 answer is: " + computeCalibrationValue(values));
 
-    System.out.println("DAY 01 - Puzzle 1 answer is: " + computeCalibrationValue(calibrationValues));
+    // ######## PUZZLE #2 ########
+    values.clear();
+
+    lines.forEach(item -> values.add(extractIntegerCalibrationValue(insertSpelledNumbersOverlapAllowed(item.toLowerCase()))));
+    System.out.println("DAY 01 - Puzzle 2 answer is: " + computeCalibrationValue(values));
   }
 
   public static String extractIntegerCalibrationValue(String data) {
@@ -42,13 +57,53 @@ public class Day01Trebuchet {
     return firstDigit + lastDigit;
   }
 
-  public static int computeCalibrationValue(List<String> values) {
-    int sum = 0;
+  public static String replaceSpelledNumbersNoOverlapAllowed(String rawLine) {
+    StringBuilder builder = new StringBuilder();
+    boolean match = false;
+    int offset = 0;
 
-    for (String v : values) {
-      sum += Integer.parseInt(v);
+    while (offset < rawLine.length()) {
+      for (Map.Entry<String, Integer> entry : digitMap.entrySet()) {
+        if (rawLine.startsWith(entry.getKey(), offset)) {
+          match = true;
+          builder.append(entry.getValue());
+          offset += entry.getKey().length();
+          break;
+        }
+      }
+
+      if (!match) {
+        builder.append(rawLine.charAt(offset));
+        offset++;
+      }
+
+      match = false;
     }
 
-    return sum;
+    return builder.toString();
+  }
+
+  public static String insertSpelledNumbersOverlapAllowed(String rawLine) {
+    StringBuilder builder = new StringBuilder();
+    int offset = 0;
+
+    while (offset < rawLine.length()) {
+      for (Map.Entry<String, Integer> entry : digitMap.entrySet()) {
+        if (rawLine.startsWith(entry.getKey(), offset)) {
+          builder.append(entry.getValue());
+        }
+      }
+
+      builder.append(rawLine.charAt(offset));
+      offset++;
+    }
+
+    return builder.toString();
+  }
+
+  public static int computeCalibrationValue(List<String> values) {
+    AtomicInteger sum = new AtomicInteger();
+    values.stream().map(Integer::parseInt).forEach(sum::addAndGet);
+    return sum.get();
   }
 }
