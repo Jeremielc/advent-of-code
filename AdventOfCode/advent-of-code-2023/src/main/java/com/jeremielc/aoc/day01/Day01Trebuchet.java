@@ -1,4 +1,4 @@
-package com.jeremielc.aoc;
+package com.jeremielc.aoc.day01;
 
 import com.jeremielc.aoc.utils.InputDataUtils;
 
