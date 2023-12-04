@@ -28,17 +28,17 @@ public class Day01Trebuchet {
     List<String> values = new ArrayList<>();
 
     // ######## PUZZLE #1 ########
-    lines.forEach(item -> values.add(extractIntegerCalibrationValue(item.toLowerCase())));
+    lines.forEach(item -> values.add(extractCalibrationValue(item.toLowerCase())));
     System.out.println("DAY 01 - Puzzle 1 answer is: " + computeCalibrationValue(values));
 
     // ######## PUZZLE #2 ########
     values.clear();
 
-    lines.forEach(item -> values.add(extractIntegerCalibrationValue(insertSpelledNumbersOverlapAllowed(item.toLowerCase()))));
+    lines.forEach(item -> values.add(extractCalibrationValue(insertSpelledNumbers(item.toLowerCase()))));
     System.out.println("DAY 01 - Puzzle 2 answer is: " + computeCalibrationValue(values));
   }
 
-  public static String extractIntegerCalibrationValue(String data) {
+  public static String extractCalibrationValue(String data) {
     String firstDigit = "";
     String lastDigit = "";
     boolean firstDigitSet = false;
@@ -57,7 +57,7 @@ public class Day01Trebuchet {
     return firstDigit + lastDigit;
   }
 
-  public static String replaceSpelledNumbersNoOverlapAllowed(String rawLine) {
+  public static String replaceSpelledNumbers(String rawLine) {
     StringBuilder builder = new StringBuilder();
     boolean match = false;
     int offset = 0;
@@ -83,19 +83,18 @@ public class Day01Trebuchet {
     return builder.toString();
   }
 
-  public static String insertSpelledNumbersOverlapAllowed(String rawLine) {
+  public static String insertSpelledNumbers(String rawLine) {
     StringBuilder builder = new StringBuilder();
-    int offset = 0;
 
-    while (offset < rawLine.length()) {
+    for (int offset = 0; offset < rawLine.length(); offset++) {
       for (Map.Entry<String, Integer> entry : digitMap.entrySet()) {
         if (rawLine.startsWith(entry.getKey(), offset)) {
           builder.append(entry.getValue());
+          break;
         }
       }
 
       builder.append(rawLine.charAt(offset));
-      offset++;
     }
 
     return builder.toString();
