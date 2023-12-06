@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,12 +13,22 @@ import com.jeremielc.aoc.utils.InputDataUtils;
 
 public class Day02GamecubeTests {
     private static final List<String> dataInputs = new ArrayList<>();
+    private static final List<GameResult> knownMinSetsOfCubes = new ArrayList<>();
 
     @BeforeAll
     public static void loadTestInputs() {
         dataInputs.addAll(InputDataUtils
                 .readDataFrom(Day02GamecubeTests.class.getResourceAsStream("/Day-02-Puzzle-1-Test-Input.txt")));
+
         assertEquals(5, dataInputs.size());
+
+        knownMinSetsOfCubes.add(new GameResult(1, 4, 2, 6));
+        knownMinSetsOfCubes.add(new GameResult(2, 1, 3, 4));
+        knownMinSetsOfCubes.add(new GameResult(3, 20, 13, 6));
+        knownMinSetsOfCubes.add(new GameResult(4, 14, 3, 15));
+        knownMinSetsOfCubes.add(new GameResult(5, 6, 3, 2));
+
+        assertEquals(5, knownMinSetsOfCubes.size());
     }
 
     @Test
@@ -87,22 +98,32 @@ public class Day02GamecubeTests {
 
     @Test
     public void testParseGameInputs() {
-        assertEquals(3, Day02Gamecube.parseGameInputs(List.of(dataInputs.get(0))).size());
-        assertEquals(3, Day02Gamecube.parseGameInputs(List.of(dataInputs.get(1))).size());
-        assertEquals(3, Day02Gamecube.parseGameInputs(List.of(dataInputs.get(2))).size());
-        assertEquals(3, Day02Gamecube.parseGameInputs(List.of(dataInputs.get(3))).size());
-        assertEquals(2, Day02Gamecube.parseGameInputs(List.of(dataInputs.get(4))).size());
+        assertEquals(5, Day02Gamecube.parseGameInputs(dataInputs).keySet().size());
 
-        assertEquals(14, Day02Gamecube.parseGameInputs(dataInputs).size());
+        assertEquals(3, Day02Gamecube.parseGameInputs(List.of(dataInputs.get(0))).get(1).size());
+        assertEquals(3, Day02Gamecube.parseGameInputs(List.of(dataInputs.get(1))).get(2).size());
+        assertEquals(3, Day02Gamecube.parseGameInputs(List.of(dataInputs.get(2))).get(3).size());
+        assertEquals(3, Day02Gamecube.parseGameInputs(List.of(dataInputs.get(3))).get(4).size());
+        assertEquals(2, Day02Gamecube.parseGameInputs(List.of(dataInputs.get(4))).get(5).size());
     }
 
     @Test
     public void testGetPossibleGameResultsForConfig() {
-        List<GameResult> results = Day02Gamecube.parseGameInputs(dataInputs);
+        Map<Integer, List<GameResult>> results = Day02Gamecube.parseGameInputs(dataInputs);
 
         assertEquals(0, Day02Gamecube.getPossibleGameResultsForConfig(results, 0, 0, 0).size());
         assertEquals(5, Day02Gamecube.getPossibleGameResultsForConfig(results, 20, 20, 20).size());
         assertEquals(3, Day02Gamecube.getPossibleGameResultsForConfig(results, 6, 6, 6).size());
         assertEquals(3, Day02Gamecube.getPossibleGameResultsForConfig(results, 6, 3, 6).size());
+    }
+
+    @Test
+    public void testGetMinimumSetsOfCubes() {
+        List<GameResult> minSetsOfCubes = Day02Gamecube
+                .getMinimumSetsOfCubes(Day02Gamecube.parseGameInputs(dataInputs));
+
+        for (int i = 0; i < 5; i++) {
+            assertEquals(knownMinSetsOfCubes.get(i), minSetsOfCubes.get(i));
+        }
     }
 }

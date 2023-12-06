@@ -1,10 +1,9 @@
 package com.jeremielc.aoc.day02;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
 
 import com.jeremielc.aoc.utils.InputDataUtils;
 
@@ -17,28 +16,45 @@ public class Day02Gamecube {
     public static void main(String[] args) {
         List<String> dataInputs = InputDataUtils
                 .readDataFrom(Day02Gamecube.class.getResourceAsStream("/Day-02-Puzzle-1-Input.txt"));
-        List<GameResult> gameResults = parseGameInputs(dataInputs);
+        Map<Integer, List<GameResult>> gameResults = parseGameInputs(dataInputs);
 
-        AtomicInteger sum = new AtomicInteger();
-        getPossibleGameResultsForConfig(gameResults, 12, 13, 14).forEach(sum::getAndAdd);
+        // ######## PUZZLE #1 ########
+        int sum = getPossibleGameResultsForConfig(gameResults, 12, 13, 14).stream()
+                .reduce(0, (acc, item) -> acc + item);
 
-        System.out.println("DAY 02 - Puzzle 1 answer is: " + sum.get());
+        System.out.println("DAY 02 - Puzzle 1 answer is: " + sum);
+
+        // ######## PUZZLE #2 ########
+        int sumOfPowers = getMinimumSetsOfCubes(gameResults).stream()
+                .map(item -> item.redCubes() * item.greenCubes() * item.blueCubes())
+                .reduce(0, (subtotal, element) -> subtotal + element);
+
+        System.out.println("DAY 02 - Puzzle 2 answer is: " + sumOfPowers);
     }
 
-    public static List<GameResult> parseGameInputs(List<String> gameInputs) {
-        List<GameResult> gameResults = new ArrayList<>();
+    public static Map<Integer, List<GameResult>> parseGameInputs(List<String> gameInputs) {
+        Map<Integer, List<GameResult>> gameResults = new HashMap<>();
+        List<GameResult> results = null;
 
         for (String gameInput : gameInputs) {
-            gameResults.addAll(parseGameInput(gameInput));
+            results = parseGameInput(gameInput);
+
+            for (GameResult result : results) {
+                if (!gameResults.containsKey(result.id())) {
+                    gameResults.put(result.id(), new ArrayList<>());
+                }
+
+                gameResults.get(result.id()).add(result);
+            }
         }
 
         return gameResults;
     }
 
-    public static List<GameResult> parseGameInput(String gameInput) {
+    public static List<GameResult> parseGameInput(String rawGameInput) {
         List<GameResult> gameResults = new ArrayList<>();
 
-        String noSpaceInput = gameInput.trim().replaceAll(" ", "");
+        String noSpaceInput = rawGameInput.trim().replaceAll(" ", "");
         String[] parts = noSpaceInput.split(":");
 
         int gameId = Integer.parseInt(parts[0].replace(GAME_KEY, ""));
@@ -62,16 +78,12 @@ public class Day02Gamecube {
         return gameResults;
     }
 
-    public static List<Integer> getPossibleGameResultsForConfig(List<GameResult> gameResults, int redCubesCount,
+    public static List<Integer> getPossibleGameResultsForConfig(Map<Integer, List<GameResult>> gameResults, int redCubesCount,
             int greenCubesCount, int blueCubesCount) {
         List<Integer> possibleGameIds = new ArrayList<>();
 
-        Set<Integer> gameIds = new HashSet<>();
-        gameResults.forEach(item -> gameIds.add(item.id()));
-
-        for (int gameId : gameIds) {
-            if (gameResults.stream()
-                    .filter(item -> item.id() == gameId)
+        for (int gameId : gameResults.keySet()) {
+            if (gameResults.get(gameId).stream()
                     .allMatch(item -> item.redCubes() <= redCubesCount && item.greenCubes() <= greenCubesCount
                             && item.blueCubes() <= blueCubesCount)) {
                 possibleGameIds.add(gameId);
@@ -79,5 +91,26 @@ public class Day02Gamecube {
         }
 
         return possibleGameIds;
+    }
+
+    public static List<GameResult> getMinimumSetsOfCubes(Map<Integer, List<GameResult>> gameResults) {
+        List<GameResult> minSetsOfCubes = new ArrayList<>();
+        int red = 0, green = 0, blue = 0;
+
+        for (int gameId : gameResults.keySet()) {
+            for (GameResult gr : gameResults.get(gameId)) {
+                red = gr.redCubes() > red ? gr.redCubes() : red;
+                green = gr.greenCubes() > green ? gr.greenCubes() : green;
+                blue = gr.blueCubes() > blue ? gr.blueCubes() : blue;
+            }
+
+            minSetsOfCubes.add(new GameResult(gameId, red, green, blue));
+
+            red = 0;
+            green = 0;
+            blue = 0;
+        }
+
+        return minSetsOfCubes;
     }
 }
