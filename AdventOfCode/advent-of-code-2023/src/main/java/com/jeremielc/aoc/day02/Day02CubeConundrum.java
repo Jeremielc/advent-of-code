@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.jeremielc.aoc.utils.InputDataUtils;
 
-public class Day02Gamecube {
+public class Day02CubeConundrum {
     private static String RED_KEY = "red";
     private static String GREEN_KEY = "green";
     private static String BLUE_KEY = "blue";
@@ -15,7 +15,7 @@ public class Day02Gamecube {
 
     public static void main(String[] args) {
         List<String> dataInputs = InputDataUtils
-                .readDataFrom(Day02Gamecube.class.getResourceAsStream("/Day-02-Puzzle-1-Input.txt"));
+                .readDataFrom(Day02CubeConundrum.class.getResourceAsStream("/Day-02-Puzzle-1-Input.txt"));
         Map<Integer, List<GameResult>> gameResults = parseGameInputs(dataInputs);
 
         // ######## PUZZLE #1 ########
